@@ -24,7 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "TinyGPS.h"
 
 #define _GPRMC_TERM   "GPRMC"
+#define _GPRMC_TERM_GLONASS   "GNRMC"
 #define _GPGGA_TERM   "GPGGA"
+#define _GPGGA_TERM_GLONASS   "GNGGA"
 
 TinyGPS::TinyGPS()
   :  _time(GPS_INVALID_TIME)
@@ -214,7 +216,11 @@ bool TinyGPS::term_complete()
   {
     if (!gpsstrcmp(_term, _GPRMC_TERM))
       _sentence_type = _GPS_SENTENCE_GPRMC;
+    else if (!gpsstrcmp(_term, _GPRMC_TERM_GLONASS))
+      _sentence_type = _GPS_SENTENCE_GPRMC;
     else if (!gpsstrcmp(_term, _GPGGA_TERM))
+      _sentence_type = _GPS_SENTENCE_GPGGA;
+    else if (!gpsstrcmp(_term, _GPGGA_TERM_GLONASS))
       _sentence_type = _GPS_SENTENCE_GPGGA;
     else
       _sentence_type = _GPS_SENTENCE_OTHER;
