@@ -23,6 +23,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "TinyGPS.h"
 
+#undef radians
+#define radians(x) ((float)(x)*(3.14159265f/180.0f))
+#undef degrees
+#define degrees(x) ((float)(x)*(180.0f/3.14159265f))
+#undef TWO_PI
+#define TWO_PI 6.28318531f
+
 #define _GPRMC_TERM   "GPRMC"
 #define _GPRMC_TERM_GLONASS   "GNRMC"
 #define _GPGGA_TERM   "GPGGA"
@@ -305,20 +312,20 @@ float TinyGPS::distance_between (float lat1, float long1, float lat2, float long
   // Because Earth is no exact sphere, rounding errors may be up to 0.5%.
   // Courtesy of Maarten Lamers
   float delta = radians(long1-long2);
-  float sdlong = sin(delta);
-  float cdlong = cos(delta);
+  float sdlong = sinf(delta);
+  float cdlong = cosf(delta);
   lat1 = radians(lat1);
   lat2 = radians(lat2);
-  float slat1 = sin(lat1);
-  float clat1 = cos(lat1);
-  float slat2 = sin(lat2);
-  float clat2 = cos(lat2);
+  float slat1 = sinf(lat1);
+  float clat1 = cosf(lat1);
+  float slat2 = sinf(lat2);
+  float clat2 = cosf(lat2);
   delta = (clat1 * slat2) - (slat1 * clat2 * cdlong); 
   delta = sq(delta); 
   delta += sq(clat2 * sdlong); 
-  delta = sqrt(delta); 
+  delta = sqrtf(delta); 
   float denom = (slat1 * slat2) + (clat1 * clat2 * cdlong); 
-  delta = atan2(delta, denom); 
+  delta = atan2f(delta, denom); 
   return delta * 6372795; 
 }
 
@@ -331,11 +338,11 @@ float TinyGPS::course_to (float lat1, float long1, float lat2, float long2)
   float dlon = radians(long2-long1);
   lat1 = radians(lat1);
   lat2 = radians(lat2);
-  float a1 = sin(dlon) * cos(lat2);
-  float a2 = sin(lat1) * cos(lat2) * cos(dlon);
-  a2 = cos(lat1) * sin(lat2) - a2;
-  a2 = atan2(a1, a2);
-  if (a2 < 0.0)
+  float a1 = sinf(dlon) * cosf(lat2);
+  float a2 = sinf(lat1) * cosf(lat2) * cosf(dlon);
+  a2 = cosf(lat1) * sinf(lat2) - a2;
+  a2 = atan2f(a1, a2);
+  if (a2 < 0.0f)
   {
     a2 += TWO_PI;
   }
@@ -373,8 +380,8 @@ void TinyGPS::f_get_position(float *latitude, float *longitude, unsigned long *f
 {
   long lat, lon;
   get_position(&lat, &lon, fix_age);
-  *latitude = lat == GPS_INVALID_ANGLE ? GPS_INVALID_F_ANGLE : (lat / 1000000.0);
-  *longitude = lat == GPS_INVALID_ANGLE ? GPS_INVALID_F_ANGLE : (lon / 1000000.0);
+  *latitude = lat == GPS_INVALID_ANGLE ? GPS_INVALID_F_ANGLE : (lat / 1000000.0f);
+  *longitude = lat == GPS_INVALID_ANGLE ? GPS_INVALID_F_ANGLE : (lon / 1000000.0f);
 }
 
 void TinyGPS::crack_datetime(int *year, byte *month, byte *day, 
@@ -397,17 +404,17 @@ void TinyGPS::crack_datetime(int *year, byte *month, byte *day,
 
 float TinyGPS::f_altitude()    
 {
-  return _altitude == GPS_INVALID_ALTITUDE ? GPS_INVALID_F_ALTITUDE : _altitude / 100.0;
+  return _altitude == GPS_INVALID_ALTITUDE ? GPS_INVALID_F_ALTITUDE : _altitude / 100.0f;
 }
 
 float TinyGPS::f_course()
 {
-  return _course == GPS_INVALID_ANGLE ? GPS_INVALID_F_ANGLE : _course / 100.0;
+  return _course == GPS_INVALID_ANGLE ? GPS_INVALID_F_ANGLE : _course / 100.0f;
 }
 
 float TinyGPS::f_speed_knots() 
 {
-  return _speed == GPS_INVALID_SPEED ? GPS_INVALID_F_SPEED : _speed / 100.0;
+  return _speed == GPS_INVALID_SPEED ? GPS_INVALID_F_SPEED : _speed / 100.0f;
 }
 
 float TinyGPS::f_speed_mph()   
@@ -428,6 +435,6 @@ float TinyGPS::f_speed_kmph()
   return sk == GPS_INVALID_F_SPEED ? GPS_INVALID_F_SPEED : _GPS_KMPH_PER_KNOT * sk; 
 }
 
-const float TinyGPS::GPS_INVALID_F_ANGLE = 1000.0;
-const float TinyGPS::GPS_INVALID_F_ALTITUDE = 1000000.0;
-const float TinyGPS::GPS_INVALID_F_SPEED = -1.0;
+const float TinyGPS::GPS_INVALID_F_ANGLE = 1000.0f;
+const float TinyGPS::GPS_INVALID_F_ALTITUDE = 1000000.0f;
+const float TinyGPS::GPS_INVALID_F_SPEED = -1.0f;
