@@ -48,7 +48,10 @@ public:
     GPS_INVALID_ALTITUDE = 999999999,  GPS_INVALID_DATE = 0,
     GPS_INVALID_TIME = 0xFFFFFFFF,		 GPS_INVALID_SPEED = 999999999, 
     GPS_INVALID_FIX_TIME = 0xFFFFFFFF, GPS_INVALID_SATELLITES = 0xFF,
-    GPS_INVALID_HDOP = 0xFFFFFFFF
+    GPS_INVALID_DOP = 0xFFFFFFFF,
+    GPS_INVALID_HDOP = GPS_INVALID_DOP,
+    GPS_INVALID_VDOP = GPS_INVALID_DOP,
+    GPS_INVALID_PDOP = GPS_INVALID_DOP,
   };
 
   static const float GPS_INVALID_F_ANGLE, GPS_INVALID_F_ALTITUDE, GPS_INVALID_F_SPEED;
@@ -79,6 +82,12 @@ public:
   // horizontal dilution of precision in 100ths
   inline unsigned long hdop() { return _hdop; }
 
+  // vertical dilution of precision in 100ths
+  inline unsigned long vdop() { return _vdop; }
+
+  // position dilution of precision in 100ths
+  inline unsigned long pdop() { return _pdop; }
+
   void f_get_position(float *latitude, float *longitude, unsigned long *fix_age = 0);
   void crack_datetime(int *year, byte *month, byte *day, 
     byte *hour, byte *minute, byte *second, byte *hundredths = 0, unsigned long *fix_age = 0);
@@ -100,7 +109,7 @@ public:
 #endif
 
 private:
-  enum {_GPS_SENTENCE_GPGGA, _GPS_SENTENCE_GPRMC, _GPS_SENTENCE_OTHER};
+  enum {_GPS_SENTENCE_GPGGA, _GPS_SENTENCE_GPRMC, _GPS_SENTENCE_GPGSA, _GPS_SENTENCE_OTHER};
 
   // properties
   unsigned long _time, _new_time;
@@ -111,6 +120,8 @@ private:
   unsigned long  _speed, _new_speed;
   unsigned long  _course, _new_course;
   unsigned long  _hdop, _new_hdop;
+  unsigned long  _vdop, _new_vdop;
+  unsigned long  _pdop, _new_pdop;
   unsigned short _numsats, _new_numsats;
 
   unsigned long _last_time_fix, _new_time_fix;
